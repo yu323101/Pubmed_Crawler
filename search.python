@@ -19,16 +19,16 @@ def fetch_abstracts(keyword, mindate='2018', maxdate='2024'):
             article_info = article['PubmedArticle'][0]['MedlineCitation']['Article']
             title = article_info.get('ArticleTitle', '')
             abstract = article_info['Abstract']['AbstractText'][0] if 'Abstract' in article_info else "No abstract available"
-            authors_list = article_info.get('AuthorList', [])
-            authors = ', '.join([f"{author.get('LastName', '')}, {author.get('ForeName', '')}" for author in authors_list if author.get('LastName')])
-            pub_date = article_info['Journal']['JournalIssue']['PubDate'].get('Year', '')
+            authors_list = article_info.get('AuthorList'， [])
+            authors = ', '。join([f"{author.get('LastName', '')}, {author.get('ForeName', '')}" for author in authors_list if author.get('LastName')])
+            pub_date = article_info['Journal']['JournalIssue']['PubDate']。get('Year', '')
             doi = ''
             for aid in article['PubmedArticle'][0]['PubmedData']['ArticleIdList']:
                 if aid.attributes.get('IdType') == 'doi':
                     doi = str(aid)
                     break
             journal_title = article_info['Journal']['Title']
-            keywords = ', '.join([kw for sublist in article.get('KeywordList', []) for kw in sublist if hasattr(kw, 'title')])
+            keywords = ', '。join([kw for sublist in article.get('KeywordList'， []) for kw in sublist if hasattr(kw, 'title')])
 
             results.append([title, pub_date, doi, authors, abstract, journal_title, keywords])
         except Exception as e:
