@@ -1,0 +1,41 @@
+import pandas as pd
+
+def normalize_journal_name(name):
+    # 将所有字符转换为小写
+    name = name.lower()
+    # 简单的缩写替换示例，你可以根据实际需要扩展这个字典
+    abbreviations = {
+        'med.': 'medicine',
+        'j.': 'journal',
+        'res.': 'research',
+        'sci.': 'science',
+        'proc.': 'proceedings',
+        'trans.': 'transactions',
+        'eng.': 'engineering'
+    }
+    # 替换缩写
+    for abbr, full in abbreviations.items():
+        name = name.replace(abbr, full)
+    return name
+
+# 载入爬取到的文章信息
+articles_path = 'PubMed_Abstracts.xlsx'
+articles_df = pd.read_excel(articles_path)
+
+# 载入影响因子信息
+if_path = '2023IF(2).xlsx'
+if_df = pd.read_excel(if_path)
+
+# 标准化期刊名称
+if_df['Normalized Journal Name'] = if_df['Journal name'].apply(normalize_journal_name)
+if_dict = pd.Series(if_df['2022 JIF'].values, index=if_df['Normalized Journal Name']).to_dict()
+
+# 标准化文章中的期刊名称并尝试匹配影响因子
+articles_df['Normalized Journal'] = articles_df['Journal'].apply(normalize_journal_name)
+articles_df['IF'] = articles_df['Normalized Journal'].map(if_dict)
+
+# 保存更新后的Excel文件
+updated_articles_path = 'Updated_PubMed_Abstracts.xlsx'
+articles_df.to_excel(updated_articles_path, index=False)
+
+print(f"更新后的文章信息已保存到 {updated_articles_path}")
