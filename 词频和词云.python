@@ -1,0 +1,209 @@
+pip install nltk
+pip install wordcloud
+
+#Import the relevant libraries
+import nltk
+from nltk import word_tokenize
+from nltk.probability import FreqDist
+import urllib.request
+from matplotlib import pyplot as plt
+from wordcloud import WordCloud
+nltk.download('punkt')
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Replace the file path with your actual file path
+file_path = "/home/nimingxing/PubMed_Abstracts.xlsx"
+file_path = "/home/nimingxing/Updated_PubMed_Abstracts.xlsx"
+file_path = "/home/nimingxing/Updated_PubMed_Abstracts24-14.xlsx"
+# Read the Excel file into a DataFrame
+df = pd.read_excel(file_path)
+
+# Display the first few rows of the DataFrame
+print(df.head())
+
+#Abstract
+abstract_column = df['Abstract']。dropna()
+abstract_column = abstract_column.astype(str)
+abstract_list = abstract_column.tolist()
+
+abstract_text = ''。join(abstract_list)
+type(abstract_text)
+
+#Keyword
+Keyword_column = df['Keyword']。dropna()
+Keyword_column = Keyword_column.astype(str)
+Keyword_list = Keyword_column.tolist()
+
+Keyword_text = ''。join(Keyword_list)
+type(Keyword_text)
+
+text = abstract_text
+text = Keyword_text
+
+##################################################################这块儿代码别运行
+#Retrieve a copy of the text from the url
+text_file = urllib.request.urlopen("https://www.gutenberg.org/cache/epub/64317/pg64317.txt")
+
+#Read and decode the text
+text = text_file.read()。decode('utf-8')
+
+#Preview a section of the text
+print(text[1400:2000])
+####################################################################
+#tokenize text by words
+words = word_tokenize(text)
+
+#check the number of words
+print(f"The total number of words in the text is {len(words)}")
+
+#find the frequency of words
+fdist = FreqDist(words)
+
+#print the 10 most common words
+fdist.most_common(10)
+
+
+
+#create an empty list to store words
+words_no_punc = []
+
+#iterate through the words list to remove punctuations
+for word in words:
+    if word.isalpha():
+        words_no_punc.append(word.lower())
+
+#print number of words without punctuation
+print(f"The total number of words without punctuation is {len(words_no_punc)}")
+
+#find the frequency of words
+fdist = FreqDist(words_no_punc)
+fdist
+
+#Plot the 10 most common words
+fdist.plot(10)
+plt.show()
+
+
+
+
+
+#Download and import list of stopwords
+nltk.download("stopwords")
+from nltk.corpus import stopwords
+
+#list of stopwords
+stopwords_list = stopwords.words("english")
+print(stopwords_list)
+
+#create an empty list to store clean words
+clean_words = []
+
+#Iterate through the words_no_punc list and add non stopwords to the new clean_words list
+for word in words_no_punc:
+    if word not in stopwords_list:
+        clean_words.append(word)
+
+print(f"The total number of words without punctuation and stopwords is {len(clean_words)}")
+
+
+
+
+
+#Download and import list of stopwords
+nltk.download("stopwords")
+from nltk.corpus import stopwords
+
+#list of stopwords
+stopwords_list = stopwords.words("english")
+print(stopwords_list)
+
+#create an empty list to store clean words
+clean_words = []
+
+#Iterate through the words_no_punc list and add non stopwords to the new clean_words list
+for word in words_no_punc:
+    if word not in stopwords_list:
+        clean_words.append(word)
+
+print(f"The total number of words without punctuation and stopwords is {len(clean_words)}")
+
+#find the frequency of words
+fdist = FreqDist(clean_words)
+fdist
+
+#Plot the 10 most common words
+fdist.plot(10)
+plt.show()
+
+
+
+
+#Update the stopwords list
+stopwords_list.extend(["said","one","like","came","back"])
+
+#create an empty list to store clean words
+clean_words = []
+
+#Iterate through the words_no_punc list and add non stopwords to the new clean_words list
+for word in words_no_punc:
+    if word not in stopwords_list:
+        clean_words.append(word)
+
+#find the frequency of words
+fdist = FreqDist(clean_words)
+fdist
+
+
+# Increase figure higeth
+plt.figure(figsize=(12, 8))
+
+#Plot the 10 most common words
+fdist.plot(20)
+
+# Rotate x-axis labels
+plt.xticks(rotation=45)
+
+# Save the plot as a PDF
+plt.savefig("most_common_words.pdf", dpi=600)
+
+# Close the plot to prevent it from displaying
+plt.close()
+
+
+
+
+
+
+
+
+#Convert word list to a single string
+clean_words_string = " ".join(clean_words)
+
+#generating the wordcloud
+wordcloud = WordCloud(background_color="white").generate(clean_words_string)
+
+#plot the wordcloud
+plt.figure(figsize = (12, 12))
+plt.imshow(wordcloud)
+
+#to remove the axis value
+plt.axis("off")
+plt.show()
+
+# Save the plot as a PDF
+plt.savefig("wordcloud.pdf", dpi=600)
+
+# Close the plot to prevent it from displaying
+plt.close()
+
+
+
+# Convert fdist to a DataFrame
+fdist_df = pd.DataFrame(fdist.items(), columns=['Word', 'Frequency'])
+
+# Export the DataFrame to an Excel file
+fdist_df.to_excel('fdist_output.xlsx', index=False)
+
+print("Exported fdist to fdist_output.xlsx")
