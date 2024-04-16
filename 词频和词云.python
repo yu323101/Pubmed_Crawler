@@ -23,20 +23,27 @@ df = pd.read_excel(file_path)
 # Display the first few rows of the DataFrame
 print(df.head())
 
+# 去除 IF 列小于 10 的行
+df_filtered = df[df['IF'] >= 10]
+
+# 打印前几行查看结果
+print(df_filtered.head())
+df = df_filtered
+
 #Abstract
-abstract_column = df['Abstract']。dropna()
+abstract_column = df['Abstract'].dropna()
 abstract_column = abstract_column.astype(str)
 abstract_list = abstract_column.tolist()
 
-abstract_text = ''。join(abstract_list)
+abstract_text = ''.join(abstract_list)
 type(abstract_text)
 
 #Keyword
-Keyword_column = df['Keyword']。dropna()
+Keyword_column = df['Keyword'].dropna()
 Keyword_column = Keyword_column.astype(str)
 Keyword_list = Keyword_column.tolist()
 
-Keyword_text = ''。join(Keyword_list)
+Keyword_text = ''.join(Keyword_list)
 type(Keyword_text)
 
 text = abstract_text
@@ -47,7 +54,7 @@ text = Keyword_text
 text_file = urllib.request.urlopen("https://www.gutenberg.org/cache/epub/64317/pg64317.txt")
 
 #Read and decode the text
-text = text_file.read()。decode('utf-8')
+text = text_file.read().decode('utf-8')
 
 #Preview a section of the text
 print(text[1400:2000])
@@ -141,7 +148,14 @@ plt.show()
 
 
 #Update the stopwords list
-stopwords_list.extend(["said","one","like","came","back"])
+#增加自定义词汇
+stopwords_list.extend(["kidney","disease",
+                       "adpkd","polycystic", "patients", "renal", "cyst", 
+                       "dominant", "autosomal", "cystic", "cysts", "sup","thus",
+                       "may","also","kidneys","study","studies","pkd"
+])
+
+stopwords_list.extend(["a"])
 
 #create an empty list to store clean words
 clean_words = []
@@ -182,10 +196,10 @@ plt.close()
 clean_words_string = " ".join(clean_words)
 
 #generating the wordcloud
-wordcloud = WordCloud(background_color="white").generate(clean_words_string)
+wordcloud = WordCloud(width=1600, height=800, background_color="white").generate(clean_words_string)
 
 #plot the wordcloud
-plt.figure(figsize = (12, 12))
+plt.figure(figsize = (20,10))
 plt.imshow(wordcloud)
 
 #to remove the axis value
@@ -207,3 +221,22 @@ fdist_df = pd.DataFrame(fdist.items(), columns=['Word', 'Frequency'])
 fdist_df.to_excel('fdist_output.xlsx', index=False)
 
 print("Exported fdist to fdist_output.xlsx")
+
+
+
+
+
+import pandas as pd
+
+# 读取数据
+df = pd.read_csv('your_dataframe.csv')
+
+# 去除 IF 列小于 10 的行
+df_filtered = df[df['IF'] >= 10]
+
+# 打印前几行查看结果
+print(df_filtered.head())
+
+# 如果需要保存筛选后的结果到新的 CSV 文件中
+# df_filtered.to_csv('filtered_dataframe.csv', index=False)
+
